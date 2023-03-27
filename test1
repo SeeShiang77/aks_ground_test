@@ -153,4 +153,26 @@ see@Azure:~/.kube$
 =======================================
 
 
+Wrong image pulled.
+-----------------------
+
+see@Azure:~/.kube$ k run nginx-aks-non-exist -l app=nginx-non --image nginx:1.99999
+pod/nginx-aks-non-exist created
+see@Azure:~/.kube$ k get pods
+NAME                  READY   STATUS         RESTARTS   AGE
+nginx                 1/1     Running        0          96m
+nginx-aks             1/1     Running        0          88s
+nginx-aks-err         1/1     Running        0          53s
+nginx-aks-non-exist   0/1     ErrImagePull   0          5s
+see@Azure:~/.kube$ k  get pods 
+NAME                  READY   STATUS             RESTARTS   AGE
+nginx                 1/1     Running            0          96m
+nginx-aks             1/1     Running            0          99s
+nginx-aks-err         1/1     Running            0          64s
+nginx-aks-non-exist   0/1     ImagePullBackOff   0          16s
+see@Azure:~/.kube$ k  get pods  --field-selector=status.phase!=Running
+NAME                  READY   STATUS         RESTARTS   AGE
+nginx-aks-non-exist   0/1     ErrImagePull   0          31s
+see@Azure:~/.kube$ 
+
 
