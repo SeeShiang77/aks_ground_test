@@ -1,0 +1,51 @@
+
+see@Azure:~/.kube$ k describe daemonsets.apps --namespace kube-system cloud-node-manager
+Name:           cloud-node-manager
+Selector:       k8s-app=cloud-node-manager
+Node-Selector:  <none>
+Labels:         addonmanager.kubernetes.io/mode=Reconcile
+                k8s-app=cloud-node-manager
+                kubernetes.io/cluster-service=true
+Annotations:    deprecated.daemonset.template.generation: 1
+Desired Number of Nodes Scheduled: 2
+Current Number of Nodes Scheduled: 2
+Number of Nodes Scheduled with Up-to-date Pods: 2
+Number of Nodes Scheduled with Available Pods: 2
+Number of Nodes Misscheduled: 0
+Pods Status:  2 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:           k8s-app=cloud-node-manager
+  Annotations:      cluster-autoscaler.kubernetes.io/daemonset-pod: true
+  Service Account:  cloud-node-manager
+  Containers:
+   cloud-node-manager:
+    Image:      mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.25.5
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      cloud-node-manager
+      --node-name=$(NODE_NAME)
+      --wait-routes
+    Limits:
+      memory:  512Mi
+    Requests:
+      cpu:     50m
+      memory:  50Mi
+    Environment:
+      NODE_NAME:         (v1:spec.nodeName)
+    Mounts:             <none>
+  Volumes:              <none>
+  Priority Class Name:  system-node-critical
+Events:                 <none>
+
+
+
+see@Azure:~/.kube$ k get pods --namespace kube-system -l k8s-app=cloud-node-manager
+NAME                       READY   STATUS    RESTARTS   AGE
+cloud-node-manager-k24f6   1/1     Running   0          100m
+cloud-node-manager-vlxbv   1/1     Running   0          100m
+
+
+
+=====================
+
