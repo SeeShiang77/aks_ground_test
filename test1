@@ -116,5 +116,24 @@ nginx   1/1     Running   0          81s   10.244.1.5   aks-agentpool-18899623-v
 
 
 
+Access to one of the node in the AKS cluster. ( with chroot /host )
+--------------------------------------------------
+
+see@Azure:~/.kube$ k get nodes -o wide
+NAME                                STATUS   ROLES   AGE    VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+aks-agentpool-18899623-vmss000000   Ready    agent   123m   v1.25.5   10.224.0.5    <none>        Ubuntu 22.04.2 LTS   5.15.0-1034-azure   containerd://1.6.18+azure-1
+aks-agentpool-18899623-vmss000001   Ready    agent   123m   v1.25.5   10.224.0.4    <none>        Ubuntu 22.04.2 LTS   5.15.0-1034-azure   containerd://1.6.18+azure-1
+see@Azure:~/.kube$ k debug node/aks-agentpool-18899623-vmss000001 -it --image=mcr.microsoft.com/dotnet/runtime-deps:5.0
+Creating debugging pod node-debugger-aks-agentpool-18899623-vmss000001-zj85l with container debugger on node aks-agentpool-18899623-vmss000001.
+If you don't see a command prompt, try pressing enter.
+root@aks-agentpool-18899623-vmss000001:/# chroot /host
+# owd
+/bin/sh: 1: owd: not found
+# pwd
+/
+# hostname
+aks-agentpool-18899623-vmss000001
+# 
+
 
 
