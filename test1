@@ -135,5 +135,22 @@ root@aks-agentpool-18899623-vmss000001:/# chroot /host
 aks-agentpool-18899623-vmss000001
 # 
 
+Exit pod and delete the debug pod.
+------------------------------------------
+see@Azure:~/.kube$ k get pods  --namespace default
+NAME                                                    READY   STATUS      RESTARTS   AGE
+nginx                                                   1/1     Running     0          62m
+node-debugger-aks-agentpool-18899623-vmss000001-w78qw   0/1     Error       0          55m
+node-debugger-aks-agentpool-18899623-vmss000001-zj85l   0/1     Completed   0          53m
+
+see@Azure:~/.kube$ k delete pod node-debugger-aks-agentpool-18899623-vmss000001-w78qw 
+pod "node-debugger-aks-agentpool-18899623-vmss000001-w78qw" deleted
+see@Azure:~/.kube$ k delete pod node-debugger-aks-agentpool-18899623-vmss000001-zj85l 
+pod "node-debugger-aks-agentpool-18899623-vmss000001-zj85l" deleted
+see@Azure:~/.kube$ 
+
+
+=======================================
+
 
 
