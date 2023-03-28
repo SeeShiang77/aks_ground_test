@@ -1,0 +1,106 @@
+When allocating Pods to a Node. If no requests are set, by default, Kubernetes will assign requests = limits.
+At runtime, Kubernetes will check that the containers in the Pod are not consuming a higher amount of resources than indicated in the limit.
+
+
+
+CPU is a compressible resource, meaning that it can be stretched in order to satisfy all the demand. In case that the processes request too much CPU, some of them will be throttled.
+
+CPU represents computing processing time, measured in cores. 
+
+You can use millicores (m) to represent smaller amounts than a core (e.g., 500m would be half a core)
+The minimum amount is 1m
+A Node might have more than one core available, so requesting CPU > 1 is possible
+
+
+Memory is a non-compressible resource, meaning that it can’t be stretched in the same manner as CPU. If a process doesn’t get enough memory to work, the process is killed.
+
+Memory is measured in Kubernetes in bytes.
+
+You can use, E, P, T, G, M, k to represent Exabyte, Petabyte, Terabyte, Gigabyte, Megabyte and kilobyte, although only the last four are commonly used. (e.g., 500M, 4G)
+Warning: don’t use lowercase m for memory (this represents Millibytes, which is ridiculously low)
+You can define Mebibytes using Mi, as well as the rest as Ei, Pi, Ti (e.g., 500Mi)
+A Mebibyte (and their analogues Kibibyte, Gibibyte,…) is 2 to the power of 20 bytes. It was created to avoid the confusion with the Kilo, Mega definitions of the metric system. You should be using this notation, as it’s the canonical definition for bytes, while Kilo and Mega are multiples of 1000
+
+
+
+
+Test on the memory and cpu limit, requests on a namespaces.
+---------------------------------------------------------------
+see@Azure:~$ cat cpu-mem-demo.yaml 
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+   name: cpu-mem-demo
+spec:
+   hard:
+      requests.cpu: 2
+      requests.memory: 1Gi
+      limits.cpu: 3
+      limits.memory: 2Gi
+see@Azure:~$ 
+
+
+see@Azure:~$ k get ns
+NAME              STATUS   AGE
+default           Active   23h
+kube-node-lease   Active   23h
+kube-public       Active   23h
+kube-system       Active   23h
+see@Azure:~$ k create namespace cpu-mem-namespaces
+namespace/cpu-mem-namespaces created
+see@Azure:~$ k apply -f cpu-mem-demo.yaml --namespace=cpu-mem-namespaces 
+The ResourceQuota "cpu-mem-demo" is invalid: 
+* spec.hard[limits.cpi]: Invalid value: "limits.cpi": must be a standard resource type or fully qualified
+* spec.hard[limits.cpi]: Invalid value: "limits.cpi": must be a standard resource for quota
+see@Azure:~$ vi cpu-mem-demo.yaml 
+see@Azure:~$ k apply -f cpu-mem-demo.yaml --namespace=cpu-mem-namespaces 
+resourcequota/cpu-mem-demo created
+see@Azure:~$ k get resourcequotas -n cpu-mem-namespaces 
+NAME           AGE   REQUEST                                     LIMIT
+cpu-mem-demo   16s   requests.cpu: 0/2, requests.memory: 0/1Gi   limits.cpu: 0/3, limits.memory: 0/2Gi
+see@Azure:~$ 
+
+
+
+==========================================
+
+
+
+LimitRanges are a Kubernetes policy that restricts the resource settings for each entity in a namespace.
+
+
+
+
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cpu-resource-constraint
+spec:
+  limits:
+  - default:
+      cpu: 500m
+    defaultRequest:
+      cpu: 500m
+    min:
+      cpu: 100m
+    max:
+      cpu: "1"
+    type: Container
+
+
+default: Containers created will have this value if none is specified.
+min: Containers created can’t have limits or requests smaller than this.
+max: Containers created can’t have limits or requests bigger than this.
+Later, if you create a new Pod with no requests or limits set, LimitRange will automatically set these values to all its containers:
+
+    Limits:
+      cpu:  500m
+    Requests:
+      cpu:  100m
+	  
+	  
+	  
+
+Kubernetes limits shouldn’t be used, except in very specific situations, as they may cause more harm than good. There’s a chance that a Container is killed in case of Out of Memory, or throttled in case of Out of CPU.
+
+For requests, use them when you need to ensure a process gets a guaranteed share of a resource.
