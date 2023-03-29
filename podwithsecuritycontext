@@ -1,0 +1,30 @@
+
+Create a pod with security context.
+===========================================
+
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: non-root-pod
+  name: non-root-pod
+spec:
+  securityContext:
+      runAsUser: 1000
+      fsGroup: 2000
+  containers:
+  - image: redis:alpine
+    name: non-root-pod
+see@Azure:~$ 
+
+
+-------------------------------------------------------------------------------------
+see@Azure:~$ k get  pod non-root-pod -o yaml | grep -i securitycontext -A 5
+  securityContext:
+    fsGroup: 2000
+    runAsUser: 1000
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  
+=======================
