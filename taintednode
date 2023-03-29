@@ -1,0 +1,124 @@
+
+Taint a node with taint --> Taints: env_type=production:NoSchedule
+( with toleration )
+===========================================================================
+
+aks-agentpool-18899623-vmss000001  tainted
+------------------------------------------------
+see@Azure:~$ k taint nodes aks-agentpool-18899623-vmss000001 env_type=production:NoSchedule
+node/aks-agentpool-18899623-vmss000001 tainted
+see@Azure:~$ k get nodes
+NAME                                STATUS   ROLES   AGE   VERSION
+aks-agentpool-18899623-vmss000000   Ready    agent   2d    v1.25.5
+aks-agentpool-18899623-vmss000001   Ready    agent   2d    v1.25.5
+see@Azure:~$ k describe nodes aks-agentpool-18899623-vmss000001
+Name:               aks-agentpool-18899623-vmss000001
+Roles:              agent
+Labels:             agentpool=agentpool
+                    app=redis
+                    beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/instance-type=Standard_B4ms
+                    beta.kubernetes.io/os=linux
+                    failure-domain.beta.kubernetes.io/region=eastasia
+                    failure-domain.beta.kubernetes.io/zone=eastasia-2
+                    kubernetes.azure.com/agentpool=agentpool
+                    kubernetes.azure.com/cluster=MC_AKS_ground_SS_Aks_eastasia
+                    kubernetes.azure.com/kubelet-identity-client-id=30112871-e4ff-47ac-817b-9ebc8650697f
+                    kubernetes.azure.com/mode=system
+                    kubernetes.azure.com/node-image-version=AKSUbuntu-2204gen2containerd-202303.06.0
+                    kubernetes.azure.com/os-sku=Ubuntu
+                    kubernetes.azure.com/role=agent
+                    kubernetes.azure.com/storageprofile=managed
+                    kubernetes.azure.com/storagetier=Premium_LRS
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=aks-agentpool-18899623-vmss000001
+                    kubernetes.io/os=linux
+                    kubernetes.io/role=agent
+                    node-role.kubernetes.io/agent=
+                    node.kubernetes.io/instance-type=Standard_B4ms
+                    storageprofile=managed
+                    storagetier=Premium_LRS
+                    topology.disk.csi.azure.com/zone=eastasia-2
+                    topology.kubernetes.io/region=eastasia
+                    topology.kubernetes.io/zone=eastasia-2
+Annotations:        csi.volume.kubernetes.io/nodeid:
+                      {"disk.csi.azure.com":"aks-agentpool-18899623-vmss000001","file.csi.azure.com":"aks-agentpool-18899623-vmss000001","secrets-store.csi.k8s....
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Mon, 27 Mar 2023 01:47:58 +0000
+Taints:             env_type=production:NoSchedule
+Unschedulable:      false
+Lease:
+  HolderIdentity:  aks-agentpool-18899623-vmss000001
+  AcquireTime:     <unset>
+  RenewTime:       Wed, 29 Mar 2023 02:22:57 +0000
+
+
+
+
+So the new pod run on another node without a taints.
+=========================================================================
+see@Azure:~$ k run dev-redis --image=redis:alpine
+pod/dev-redis created
+see@Azure:~$ k get pods -o wide
+NAME            READY   STATUS    RESTARTS   AGE   IP            NODE                                NOMINATED NODE   READINESS GATES
+dev-redis       1/1     Running   0          6s    10.244.0.16   aks-agentpool-18899623-vmss000000   <none>           <none>
+multi-pod       2/2     Running   0          19m   10.244.1.12   aks-agentpool-18899623-vmss000001   <none>           <none>
+nginx           1/1     Running   0          46h   10.244.1.5    aks-agentpool-18899623-vmss000001   <none>           <none>
+nginx-aks       1/1     Running   0          45h   10.244.1.6    aks-agentpool-18899623-vmss000001   <none>           <none>
+nginx-aks-err   1/1     Running   0          45h   10.244.1.7    aks-agentpool-18899623-vmss000001   <none>           <none>
+non-root-pod    1/1     Running   0          14m   10.244.0.15   aks-agentpool-18899623-vmss000000   <none>           <none>
+redispod100     1/1     Running   0          52m   10.244.1.11   aks-agentpool-18899623-vmss000001   <none>           <none>
+tomcat          1/1     Running   0          42h   10.244.1.9    aks-agentpool-18899623-vmss000001   <none>           <none>
+
+
+======================================================================================
+
+
+Create a pod with toleration to be able to run on tainted node -- aks-agentpool-18899623-vmss000001
+======================================================================================================
+
+see@Azure:~$ cat prod-redis.yaml 
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: prod-redis
+  name: prod-redis
+spec:
+  containers:
+  - image: redis:alpine
+    name: prod-redis
+  tolerations:
+  - key: "env_type"
+    operator: "Equal"
+    value: "production"
+    effect: "NoSchedule"
+see@Azure:~$ 
+
+
+It is scheduled to --> aks-agentpool-18899623-vmss000001
+================================================================================
+
+see@Azure:~$ k describe pod prod-redis | grep Tolerations -A 10
+Tolerations:                 env_type=production:NoSchedule
+                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  68s   default-scheduler  Successfully assigned default/prod-redis to aks-agentpool-18899623-vmss000001
+  Normal  Pulling    68s   kubelet            Pulling image "redis:alpine"
+  Normal  Pulled     63s   kubelet            Successfully pulled image "redis:alpine" in 5.309125142s
+  Normal  Created    63s   kubelet            Created container prod-redis
+  Normal  Started    63s   kubelet            Started container prod-redis
+see@Azure:~$ 
+
+==============================================================================================
+
+
+
+
+
+
+
