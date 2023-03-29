@@ -1,0 +1,45 @@
+
+Create service account , cluster role and clusterrolebinding.
+=====================================================================
+
+create service account
+===========================
+  k create serviceaccount pvviewer
+
+Create the clusterrole (with role and resource)
+======================================================  
+  k create clusterrole pvviewer-role --verb=list --resource=persistentvolumes
+	
+Bind the clusterrole and the service account
+=====================================================
+  k create clusterrolebinding pvviewer-role-binding --clusterrole=pvviewer-role --serviceaccount=default:pvviewer
+  
+
+Notice, in k8s version 1.26, no options in the kubectl run pod with service account, so have to do create the pod with service account via a yaml file.
+================================================================================================================================================================
+
+see@Azure:~$ cat pvviewer.yaml 
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redispod100
+spec:
+  containers:
+  - image: redis:latest
+    name: redispod
+  serviceAccountName: pvviewer
+  
+  
+
+  k apply -f pvviewer.yaml 
+	
+	
+see@Azure:~$ k get pods redispod100 -o yaml | grep -i pvviewer
+      {"apiVersion":"v1","kind":"Pod","metadata":{"annotations":{},"name":"redispod100","namespace":"default"},"spec":{"containers":[{"image":"redis:latest","name":"redispod"}],"serviceAccountName":"pvviewer"}}
+  serviceAccount: pvviewer
+  serviceAccountName: pvviewer
+
+
+
+==============================================
+
