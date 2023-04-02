@@ -1,0 +1,134 @@
+Kubernetes QOS class -- best effort, burstable, guaranteed.
+===============================================================
+
+When a Node runs out of resources, Kubernetes will first evict BestEffort Pods running on that Node, followed by Burstable and finally Guaranteed Pods.
+
+=======================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-besteffort
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: test-besteffort
+  template:
+    metadata:
+      labels:
+        app: test-besteffort
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+		  
+		  
+		  
+if no "request" and "limit" specified, then it will deployed as "besteffort" --->
+
+see@Azure:~$ k describe pod test-besteffort-76fc78484c-pm49b | grep -i besteffort
+Name:             test-besteffort-76fc78484c-pm49b
+Labels:           app=test-besteffort
+Controlled By:  ReplicaSet/test-besteffort-76fc78484c
+QoS Class:                   BestEffort
+  Normal  Scheduled  118s  default-scheduler  Successfully assigned default/test-besteffort-76fc78484c-pm49b to aks-agentpool-18899623-vmss000000
+see@Azure:~$ 
+
+
+-------------------------------------------------------------------------------------
+
+
+
+
+
+		  
+=================================================
+
+Burstable QOS class test case.
+------------------------------------
+Deployment with requests and limits set:
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-burstable
+spec:
+  replicas: 15
+  selector:
+    matchLabels:
+      app: test-burstable
+  template:
+    metadata:
+      labels:
+        app: test-burstable
+    spec:
+      containers:
+        - name: test
+          image: nginx:alpine
+          resources:
+            requests:
+              memory: 100Mi
+              cpu: 100m
+            limits:
+              memory: 500Mi
+              cpu: 500m
+			  
+			  
+see@Azure:~$ k describe pods test-burstable-5677785f5-87xlm  | grep -i burstable
+Name:             test-burstable-5677785f5-87xlm
+Labels:           app=test-burstable
+Controlled By:  ReplicaSet/test-burstable-5677785f5
+QoS Class:                   Burstable
+  Normal  Scheduled  97s   default-scheduler  Successfully assigned default/test-burstable-5677785f5-87xlm to aks-agentpool-18899623-vmss000000
+see@Azure:~$ 
+		  
+========================================================
+
+
+QOS of guaranteed class -----> requests and limits set to the same limits.
+================================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-guaranteed
+spec:
+  replicas: 15
+  selector:
+    matchLabels:
+      app: test-guaranteed
+  template:
+    metadata:
+      labels:
+        app: test-guaranteed
+    spec:
+      containers:
+        - name: test
+          image: nginx:alpine
+          resources:
+            requests:
+              memory: 200Mi
+              cpu: 500m
+            limits:
+              memory: 200Mi
+              cpu: 500m
+			  
+			  
+
+see@Azure:~$ k describe pod test-guaranteed-7cf68db7c5-l8b2z 
+Name:             test-guaranteed-7cf68db7c5-l8b2z
+
+
+Events:
+  Type     Reason             Age    From                Message
+  ----     ------             ----   ----                -------
+  Warning  FailedScheduling   4m     default-scheduler   0/2 nodes are available: 1 Insufficient cpu, 1 node(s) had untolerated taint {env_type: production}. preemption: 0/2 nodes are available: 1 No preemption victims found for incoming pod, 1 Preemption is not helpful for scheduling.
+  Normal   NotTriggerScaleUp  3m55s  cluster-autoscaler  pod didn't trigger scale-up: 1 in backoff after failed scale-up
+see@Azure:~$ 
+
+
+
+======================================================================
