@@ -1,0 +1,167 @@
+List images downloadable from the worker nodes.
+==================================================================	  
+kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{range .status.images[*]}{"\t"}{.names[0]}{"\n"}{end}{end}'
+	
+see@Azure:~$ k get nodes  -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{range .status.images[*]}{"\t"}{.names[0]}{"\n"}{end}{end}'
+aks-agentpool-18899623-vmss000000
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:c2d532d4f93c70075aec84b58676e561452705b2fb9bf6d8c53f0fcc92de889b
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod01182023-095c864a
+        mcr.microsoft.com/oss/calico/cni:v3.23.3
+        mcr.microsoft.com/oss/calico/node:v3.24.0
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod/prometheus-collector/images:6.4.0-main-02-22-2023-3ee44b9e
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod/prometheus-collector/images:6.2.0-main-01-31-2023-e1e3858b
+        mcr.microsoft.com/oss/calico/node:v3.23.3
+        mcr.microsoft.com/oss/calico/cni:v3.24.0
+        mcr.microsoft.com/oss/tigera/operator:v1.23.8
+        mcr.microsoft.com/oss/cilium/cilium:1.12.5.1
+        mcr.microsoft.com/oss/cilium/cilium:1.12.5
+        mcr.microsoft.com/aks/hcp/hcp-tunnel-front:master.220527.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.8-hotfix.20221109.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.15-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.15-hotfix.20230114.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.12-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.12-hotfix.20221109.3
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.8-hotfix.20221109.3
+        mcr.microsoft.com/oss/calico/kube-controllers:v3.23.3
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.3-hotfix.20221109.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.10.3
+        mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.2.2.5
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.9-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.9.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.6-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.6-hotfix.20221216.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.3-hotfix.20221216.1
+        mcr.microsoft.com/oss/calico/typha:v3.23.3
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.22.15-hotfix.20221109.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.22.11-hotfix.20221109.1
+        mcr.microsoft.com/containernetworking/azure-cns:v1.4.39
+        mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller:v1.2.1
+        mcr.microsoft.com/oss/calico/node:v3.8.9.5
+        mcr.microsoft.com/containernetworking/azure-cns:v1.4.35
+        mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.26.2.1
+        mcr.microsoft.com/aks/acc/sgx-attestation:3.1
+        mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi@sha256:4be036dd35933a8889a5b14f98a8377e8057e652a64f0bc3908225d58db34daa
+        mcr.microsoft.com/oss/kubernetes/exechealthz:1.2_v0.0.5
+        mcr.microsoft.com/aks/hcp/tunnel-openvpn:master.220527.2
+        mcr.microsoft.com/containernetworking/azure-npm:v1.4.32
+        mcr.microsoft.com/oss/kubernetes-csi/azurefile-csi:v1.2.2
+        mcr.microsoft.com/aks/command/runtime:master.220211.1
+        mcr.microsoft.com/oss/kubernetes-csi/azurefile-csi:v1.24.0
+        mcr.microsoft.com/oss/kubernetes-csi/secrets-store/driver:v1.2.2.4
+        mcr.microsoft.com/oss/calico/kube-controllers:v3.24.0
+        mcr.microsoft.com/containernetworking/cni-dropgz:v0.0.4
+        mcr.microsoft.com/oss/tigera/operator:v1.28.0
+        mcr.microsoft.com/oss/nvidia/k8s-device-plugin:v0.9.0
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.26.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.26.0
+aks-agentpool-18899623-vmss000001
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:c2d532d4f93c70075aec84b58676e561452705b2fb9bf6d8c53f0fcc92de889b
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod01182023-095c864a
+        mcr.microsoft.com/oss/calico/cni:v3.23.3
+        mcr.microsoft.com/oss/calico/node:v3.24.0
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod/prometheus-collector/images:6.4.0-main-02-22-2023-3ee44b9e
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod/prometheus-collector/images:6.2.0-main-01-31-2023-e1e3858b
+        mcr.microsoft.com/oss/calico/node:v3.23.3
+        mcr.microsoft.com/oss/calico/cni:v3.24.0
+        mcr.microsoft.com/oss/tigera/operator:v1.23.8
+        docker.io/library/tomcat@sha256:8ecb10948deb32c34aeadf7bf95d12a93fbd3527911fa629c1a3e7823b89ce6f
+        mcr.microsoft.com/oss/cilium/cilium:1.12.5.1
+        mcr.microsoft.com/oss/cilium/cilium:1.12.5
+        mcr.microsoft.com/aks/hcp/hcp-tunnel-front:master.220527.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.8-hotfix.20221109.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.15-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.15-hotfix.20230114.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.12-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.12-hotfix.20221109.3
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.8-hotfix.20221109.3
+        mcr.microsoft.com/oss/calico/kube-controllers:v3.23.3
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.3-hotfix.20221109.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.10.3
+        mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.2.2.5
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.9-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.9.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.6-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.6-hotfix.20221216.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.3-hotfix.20221216.1
+        mcr.microsoft.com/oss/calico/typha:v3.23.3
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.22.15-hotfix.20221109.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.22.11-hotfix.20221109.1
+        mcr.microsoft.com/containernetworking/azure-cns:v1.4.39
+        mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller:v1.2.1
+        mcr.microsoft.com/oss/calico/node:v3.8.9.5
+        mcr.microsoft.com/containernetworking/azure-cns:v1.4.35
+        mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.26.2.1
+        mcr.microsoft.com/aks/acc/sgx-attestation:3.1
+        mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi@sha256:4be036dd35933a8889a5b14f98a8377e8057e652a64f0bc3908225d58db34daa
+        mcr.microsoft.com/oss/kubernetes/exechealthz:1.2_v0.0.5
+        mcr.microsoft.com/aks/hcp/tunnel-openvpn:master.220527.2
+        mcr.microsoft.com/containernetworking/azure-npm:v1.4.32
+        mcr.microsoft.com/oss/kubernetes-csi/azurefile-csi:v1.2.2
+        mcr.microsoft.com/aks/command/runtime:master.220211.1
+        mcr.microsoft.com/oss/kubernetes-csi/azurefile-csi:v1.24.0
+        mcr.microsoft.com/oss/kubernetes-csi/secrets-store/driver:v1.2.2.4
+        docker.io/library/nginx@sha256:e6693c20186f837fc393390135d8a598a96a833917917789d63766cab6c59582
+        mcr.microsoft.com/oss/calico/kube-controllers:v3.24.0
+        mcr.microsoft.com/containernetworking/cni-dropgz:v0.0.4
+        mcr.microsoft.com/oss/tigera/operator:v1.28.0
+        mcr.microsoft.com/oss/nvidia/k8s-device-plugin:v0.9.0
+		
+====================================================================================
+
+List a downloadable images on a particular nodes in AKS.
+---------------------------------------------------------------
+see@Azure:~$ k get nodes  -o jsonpath='{range .items[0]}{.metadata.name}{"\n"}{range .status.images[*]}{"\t"}{.names[0]}{"\n"}{end}{end}'
+aks-agentpool-18899623-vmss000000
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:c2d532d4f93c70075aec84b58676e561452705b2fb9bf6d8c53f0fcc92de889b
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod01182023-095c864a
+        mcr.microsoft.com/oss/calico/cni:v3.23.3
+        mcr.microsoft.com/oss/calico/node:v3.24.0
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod/prometheus-collector/images:6.4.0-main-02-22-2023-3ee44b9e
+        mcr.microsoft.com/azuremonitor/containerinsights/ciprod/prometheus-collector/images:6.2.0-main-01-31-2023-e1e3858b
+        mcr.microsoft.com/oss/calico/node:v3.23.3
+        mcr.microsoft.com/oss/calico/cni:v3.24.0
+        mcr.microsoft.com/oss/tigera/operator:v1.23.8
+        mcr.microsoft.com/oss/cilium/cilium:1.12.5.1
+        mcr.microsoft.com/oss/cilium/cilium:1.12.5
+        mcr.microsoft.com/aks/hcp/hcp-tunnel-front:master.220527.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.8-hotfix.20221109.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.15-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.15-hotfix.20230114.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.12-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.12-hotfix.20221109.3
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.23.8-hotfix.20221109.3
+        mcr.microsoft.com/oss/calico/kube-controllers:v3.23.3
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.3-hotfix.20221109.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.10.3
+        mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.2.2.5
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.9-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.9.2
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.6-hotfix.20230208.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.6-hotfix.20221216.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.24.3-hotfix.20221216.1
+        mcr.microsoft.com/oss/calico/typha:v3.23.3
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.22.15-hotfix.20221109.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.22.11-hotfix.20221109.1
+        mcr.microsoft.com/containernetworking/azure-cns:v1.4.39
+        mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller:v1.2.1
+        mcr.microsoft.com/oss/calico/node:v3.8.9.5
+        mcr.microsoft.com/containernetworking/azure-cns:v1.4.35
+        mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.26.2.1
+        mcr.microsoft.com/aks/acc/sgx-attestation:3.1
+        mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi@sha256:4be036dd35933a8889a5b14f98a8377e8057e652a64f0bc3908225d58db34daa
+        mcr.microsoft.com/oss/kubernetes/exechealthz:1.2_v0.0.5
+        mcr.microsoft.com/aks/hcp/tunnel-openvpn:master.220527.2
+        mcr.microsoft.com/containernetworking/azure-npm:v1.4.32
+        mcr.microsoft.com/oss/kubernetes-csi/azurefile-csi:v1.2.2
+        mcr.microsoft.com/aks/command/runtime:master.220211.1
+        mcr.microsoft.com/oss/kubernetes-csi/azurefile-csi:v1.24.0
+        mcr.microsoft.com/oss/kubernetes-csi/secrets-store/driver:v1.2.2.4
+        mcr.microsoft.com/oss/calico/kube-controllers:v3.24.0
+        mcr.microsoft.com/containernetworking/cni-dropgz:v0.0.4
+        mcr.microsoft.com/oss/tigera/operator:v1.28.0
+        mcr.microsoft.com/oss/nvidia/k8s-device-plugin:v0.9.0
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.26.1
+        mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.26.0
+		
+		
+==================================================================================================================================================================
