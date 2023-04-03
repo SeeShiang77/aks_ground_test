@@ -1,0 +1,172 @@
+Python client to list POD IP in AKS cluster test.
+==========================================================
+
+see@Azure:~$ python
+Python 3.9.14 (main, Feb  8 2023, 03:39:52) 
+[GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from kubernetes import client, config
+>>> 
+>>> config.load_kube_config()
+>>> 
+>>> v1=client.CoreV1Api()
+>>> print("Listing pods with their IPs:")
+Listing pods with their IPs:
+>>> ret = v1.list_pod_for_all_namespaces(watch=False)
+>>> for i in ret.items:
+...     print("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+... 
+10.244.0.16     default dev-redis
+10.244.0.18     default essports-wl02-58b89479c7-vcj5w
+10.244.1.12     default multi-pod
+10.244.1.5      default nginx
+10.244.1.7      default nginx-aks-err
+10.244.0.15     default non-root-pod
+10.244.1.14     default prod-redis
+10.244.0.37     default test-besteffort-76fc78484c-52mfv
+10.244.0.50     default test-besteffort-76fc78484c-5qp88
+10.244.0.41     default test-besteffort-76fc78484c-8d775
+10.244.0.46     default test-besteffort-76fc78484c-8r8n9
+10.244.0.36     default test-besteffort-76fc78484c-9qnwn
+10.244.0.49     default test-besteffort-76fc78484c-bxp47
+10.244.0.44     default test-besteffort-76fc78484c-c5j44
+10.244.0.40     default test-besteffort-76fc78484c-djf2b
+10.244.0.39     default test-besteffort-76fc78484c-gtptm
+10.244.0.45     default test-besteffort-76fc78484c-pm49b
+10.244.0.38     default test-besteffort-76fc78484c-q855s
+10.244.0.43     default test-besteffort-76fc78484c-qh5cz
+10.244.0.47     default test-besteffort-76fc78484c-qvwnh
+10.244.0.48     default test-besteffort-76fc78484c-wwstl
+10.244.0.42     default test-besteffort-76fc78484c-zftr9
+10.244.1.9      default tomcat
+10.244.0.17     hr      hr-pod
+10.244.1.2      kube-system     aks-secrets-store-csi-driver-5qng8
+10.244.0.3      kube-system     aks-secrets-store-csi-driver-z9gxj
+10.224.0.4      kube-system     aks-secrets-store-provider-azure-2j52v
+10.224.0.5      kube-system     aks-secrets-store-provider-azure-gp7bv
+10.244.1.15     kube-system     ama-logs-7f7x5
+10.244.0.20     kube-system     ama-logs-cslrr
+10.244.0.19     kube-system     ama-logs-rs-5dd4f56cd8-t77ws
+10.224.0.5      kube-system     azure-ip-masq-agent-d694b
+10.224.0.4      kube-system     azure-ip-masq-agent-v7x6k
+10.224.0.5      kube-system     cloud-node-manager-k24f6
+10.224.0.4      kube-system     cloud-node-manager-vlxbv
+10.244.0.11     kube-system     coredns-77f75ff65d-d5r25
+10.244.0.10     kube-system     coredns-77f75ff65d-tt46m
+10.244.1.10     kube-system     coredns-autoscaler-856dcfb4ff-zsrnd
+10.224.0.4      kube-system     csi-azuredisk-node-hwqj4
+10.224.0.5      kube-system     csi-azuredisk-node-kvkxk
+10.224.0.5      kube-system     csi-azurefile-node-62xdf
+10.224.0.4      kube-system     csi-azurefile-node-9xj9p
+10.244.1.4      kube-system     konnectivity-agent-67d7c7bf99-kmgfv
+10.244.0.14     kube-system     konnectivity-agent-67d7c7bf99-tstwf
+10.224.0.5      kube-system     kube-proxy-kn6vc
+10.224.0.4      kube-system     kube-proxy-x9smv
+10.244.0.12     kube-system     metrics-server-56c547ff47-cdlf4
+10.244.0.13     kube-system     metrics-server-56c547ff47-j2llc
+>>> 
+
+
+
+
+=============================================================================
+
+
+
+From newer versions of Kubernetes, the kubelet is in charge of issuing a request to the API server and retrieving a temporary token.
+
+This token is similar to the one in the Secret object, but there is a critical distinction: it will expire due to security reason.
+
+Also, the token is not injected in a Secret; instead, it is mounted in the pod as a projected volume.
+
+let see these testing:
+-----------------------------
+
+see@Azure:/etc$ k exec -it nginx -- bash
+root@nginx:/# export APISERVER=https://kubernetes.default.svc
+root@nginx:/# export SERVICEACCOUNT=/var/run/secrets/kubernetes.io/serviceaccount
+root@nginx:/# export CACERT=${SERVICEACCOUNT}/ca.crt
+root@nginx:/# export TOKEN=$(cat ${SERVICEACCOUNT}/token)
+root@nginx:/# echo $TOKEN
+eyJhbGciOiJSUzI1NiIsImtpZCI6IlRudm9kcDNFdllMTjN5MUpCN1BBdG1UdU9LS1k3R1RrOVFiUUs3eVlBQ0kifQ.eyJhdWQiOlsiaHR0cHM6Ly9zc2Frcy1kbnMtZGllYXFqc3cuaGNwLmVhc3Rhc2lhLmF6bWs4cy5pbyIsIlwic3Nha3MtZG5zLWRpZWFxanN3LmhjcC5lYXN0YXNpYS5hem1rOHMuaW9cIiJdLCJleHAiOjE3MTIwNjQzNTgsImlhdCI6MTY4MDUyODM1OCwiaXNzIjoiaHR0cHM6Ly9zc2Frcy1kbnMtZGllYXFqc3cuaGNwLmVhc3Rhc2lhLmF6bWs4cy5pbyIsImt1YmVybmV0ZXMuaW8iOnsibmFtZXNwYWNlIjoiZGVmYXVsdCIsInBvZCI6eyJuYW1lIjoibmdpbngiLCJ1aWQiOiI0MDk3N2Y5Zi05MGNhLTQ1Y2EtYjFhMS0zMWMyNDc4NTdhM2UifSwic2VydmljZWFjY291bnQiOnsibmFtZSI6ImRlZmF1bHQiLCJ1aWQiOiI5NGM4MGMzNS0wODFkLTRlZTMtOWQ5ZS1kZmJiZmZiMTBjOTcifSwid2FybmFmdGVyIjoxNjgwNTMxOTY1fSwibmJmIjoxNjgwNTI4MzU4LCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpkZWZhdWx0In0.CHAXQxG5gX_we-AuGUHxZwZvVXza27BFvhVMXU86sWdbkR971WX_x4M1FK72Vhckb2zMpGQfOAzap0ppbCfbY23M6tkS2bogR3a3UZ-6Q0MOE62SfU91YmOG-5f8UVc-ZKij1yWc0FpfJeizm28P3-p-QgS5oP5D9Dt3wDc_HI29PDJPqhWOOwDnT4svb1iJRTO0j3ZbwoA0wKMWeSCx99_3Vwcc1kUufR-n_Y_sG9_6aEfhkHRh3aNgVhJ03Y1prlrgb7BVXYHCIQPiLLWxNozrJEfHS83YLylJIjQjoapqUAu-j6ZL5k6wy6bGzyXPHipMD3qsAuqhXJFx7fmTfS5lzg9SteuXdSXqFunoVjXPSy7Y6jErzmhcKo8keBjb3o5pCfeOyr6_CHxrdPqmvIGyNLkrgeXr-pB_eU24CQ2EHhXaUMSYODmHLkPUwXfLqtY04jjczLF4AVskNEV-a5gBuFEIFwQdAxO5iuvIYnekPO4G6mQp3sVoLtvC4ef7tKXNejQcnxk4azpZfNSoLRUVlgR2O5WB10VGvcpp2WzUivM-AcnzhQJhsW7qljihcq_OKXTnBasahDNlxRVpBhsmAxJaRhGp_POULlWua5AXVU-W-Q33xuI1aLntaILCU1UxYNMPgMnUBQqJs7NfTqT719dR1sYwboCdn9zjvfM
+root@nginx:/# curl --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
+{
+  "kind": "APIVersions",
+  "versions": [
+    "v1"
+  ],
+  "serverAddressByClientCIDRs": [
+    {
+      "clientCIDR": "0.0.0.0/0",
+      "serverAddress": "ssaks-dns-dieaqjsw.hcp.eastasia.azmk8s.io:443"
+    }
+  ]
+  
+------------------
+
+The secret is mounted on projected volume as below:
+---------------------------------------------------
+see@Azure:/etc$ k get pod nginx -o yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2023-03-27T03:43:28Z"
+  labels:
+    run: nginx
+  name: nginx
+  namespace: default
+  resourceVersion: "26933"
+  uid: 40977f9f-90ca-45ca-b1a1-31c247857a3e
+spec:
+  containers:
+  - image: nginx:latest
+    imagePullPolicy: Always
+    name: nginx
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount     --------------------> this line
+      name: kube-api-access-jn7b8
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: aks-agentpool-18899623-vmss000001
+.......
+  volumes:
+  - name: kube-api-access-jn7b8
+    projected:                       -------------------------> projected volume
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+
+
+Note: * ---> Currently, the following types of volume sources can be included: secret, downwardAPI, configMap and serviceAccountToken.
+
+
+  
+=====================================================================================
+
+
+
+
+
+  
+  
+  
+  
+
