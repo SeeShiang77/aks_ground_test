@@ -164,3 +164,39 @@ see@Azure:~$
 
 =================================================================================
 
+
+Test on  Inter-pod affinity and anti-affinity.
+===================================================
+
+I only have 2 nodes in AKS due to resource limitations and I have to untaint one of the node for the test.
+----------------------------------------------------------------------------------------------------------------
+see@Azure:~$ k taint node aks-agentpool-18899623-vmss000001 env_type=production:NoSchedule-
+node/aks-agentpool-18899623-vmss000001 untainted
+see@Azure:~$ 
+
+
+let try again to run and make sure the pods create on 2 nodes ( 2 replicas of the redis-cache), anti-affinity rules to match label "app=redis" with topologyKey.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Before untaint the node 'aks-agentpool-18899623-vmss000001' , the pods in the deployment unable to be scheduled as referring to the below Events in pods replicas.
+
+see@Azure:~$ k describe pods redis-cache-65b854b776-c5f77  | grep -A10 Events
+Events:
+  Type     Reason             Age                   From                Message
+  ----     ------             ----                  ----                -------
+  Warning  FailedScheduling   10m                   default-scheduler   0/2 nodes are available: 1 node(s) didn't match pod anti-affinity rules, 1 node(s) had untolerated taint {env_type: production}. preemption: 0/2 nodes are available: 1 No preemption victims found for incoming pod, 1 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling   5m51s                 default-scheduler   0/2 nodes are available: 1 node(s) didn't match pod anti-affinity rules, 1 node(s) had untolerated taint {env_type: production}. preemption: 0/2 nodes are available: 1 No preemption victims found for incoming pod, 1 Preemption is not helpful for scheduling.
+  Normal   Scheduled          3m37s                 default-scheduler   Successfully assigned default/redis-cache-65b854b776-c5f77 to aks-agentpool-18899623-vmss000001
+  Normal   NotTriggerScaleUp  5m50s (x31 over 10m)  cluster-autoscaler  pod didn't trigger scale-up: 1 in backoff after failed scale-up
+  Normal   Pulling            3m37s                 kubelet             Pulling image "redis:3.2-alpine"
+  Normal   Pulled             3m31s                 kubelet             Successfully pulled image "redis:3.2-alpine" in 5.64831415s
+  Normal   Created            3m31s                 kubelet             Created container redis-server
+  Normal   Started            3m31s                 kubelet             Started container redis-server
+see@Azure:~$ 
+
+
+
+
+
+
+
+
