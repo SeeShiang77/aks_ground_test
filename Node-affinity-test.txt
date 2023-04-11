@@ -1,0 +1,166 @@
+Try to test affinity on nodes ---> PODS.
+============================================
+
+for instance, try to set the following label of the nodes on the pods to test.
+
+-------------> this label one of the node in AKS cluster:   kubernetes.io/hostname=aks-agentpool-18899623-vmss000000
+
+using the template from the kubernetes.io
+-------------------------------------------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-with-node-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - aks-agentpool-18899623-vmss000000
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: another-node-label-key
+            operator: In
+            values:
+            - another-node-label-value
+  containers:
+  - name: with-node-affinity
+    image: registry.k8s.io/pause:2.0
+	
+	
+	
+=========================================================================
+
+Test outputs:
+------------------
+see@Azure:~$ k apply -f test-with-node-affinity.yaml 
+pod/test-with-node-affinity created
+see@Azure:~$ k get pods test-with-node-affinity 
+NAME                      READY   STATUS    RESTARTS   AGE
+test-with-node-affinity   1/1     Running   0          8s
+see@Azure:~$ k describe pod test-with-node-affinity 
+dev-redis                         nginx-aks-err                     test-besteffort-76fc78484c-52mfv  test-besteffort-76fc78484c-9qnwn  test-besteffort-76fc78484c-gtptm  test-besteffort-76fc78484c-qvwnh
+essports-wl02-58b89479c7-vcj5w    non-root-pod                      test-besteffort-76fc78484c-5qp88  test-besteffort-76fc78484c-bxp47  test-besteffort-76fc78484c-pm49b  test-besteffort-76fc78484c-wwstl
+multi-pod                         prod-redis                        test-besteffort-76fc78484c-8d775  test-besteffort-76fc78484c-c5j44  test-besteffort-76fc78484c-q855s  test-besteffort-76fc78484c-zftr9
+nginx                             rbac-pod-1                        test-besteffort-76fc78484c-8r8n9  test-besteffort-76fc78484c-djf2b  test-besteffort-76fc78484c-qh5cz  tomcat
+see@Azure:~$ k describe pod test-with-node-affinity 
+Name:             test-with-node-affinity
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             aks-agentpool-18899623-vmss000000/10.224.0.5
+Start Time:       Tue, 11 Apr 2023 01:36:44 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.77
+IPs:
+  IP:  10.244.0.77
+Containers:
+  with-node-affinity:
+    Container ID:   containerd://00fcaf08dd9dec6f5fbb0d0f4caac6a49595822901a660833887dfe0ef3fe94e
+    Image:          registry.k8s.io/pause:2.0
+    Image ID:       sha256:5de2169ecc98c9854e95ca8f965b0755a04674351b9a3bddc47375a9b63f5bd6
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Tue, 11 Apr 2023 01:36:46 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8j29n (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-8j29n:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  20s   default-scheduler  Successfully assigned default/test-with-node-affinity to aks-agentpool-18899623-vmss000000      ------------------> Scheduled/run on this node.
+  Normal  Pulling    20s   kubelet            Pulling image "registry.k8s.io/pause:2.0"
+  Normal  Pulled     19s   kubelet            Successfully pulled image "registry.k8s.io/pause:2.0" in 975.738257ms
+  Normal  Created    19s   kubelet            Created container with-node-affinity
+  Normal  Started    19s   kubelet            Started container with-node-affinity
+  
+  
+============================
+
+We can try to reverse the condition to ANTI-AFFINITY by using the NOTIN operator, let try on it.
+=========================================================================================================
+
+see@Azure:~$ cat test-with-node-affinity.yaml 
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-with-node-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: app
+            operator: NotIn
+            values:
+            - redis           -----------------------------------> 
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: another-node-label-key
+            operator: In
+            values:
+            - another-node-label-value
+  containers:
+  - name: with-node-affinity
+    image: registry.k8s.io/pause:2.0
+	
+	
+Node has the app=redis label.
+====================================
+see@Azure:~$ k get nodes
+NAME                                STATUS   ROLES   AGE   VERSION
+aks-agentpool-18899623-vmss000000   Ready    agent   15d   v1.25.5
+aks-agentpool-18899623-vmss000001   Ready    agent   15d   v1.25.5
+see@Azure:~$ k get nodes -l=app=redis
+NAME                                STATUS   ROLES   AGE   VERSION
+aks-agentpool-18899623-vmss000001   Ready    agent   15d   v1.25.5
+see@Azure:~$ 
+
+
+
+
+if set the NotIn operator to not run on the app=redis label nodes, then it will run on the "aks-agentpool-18899623-vmss000000" node.
+					
+					
+					
+so the pods not running on the node with the app=redis label.
+====================================================================
+see@Azure:~$ k describe pod test-with-node-affinity  | grep -i Node:
+Node:             aks-agentpool-18899623-vmss000000/10.224.0.5
+see@Azure:~$ 
+
+
+
+=================================================================================
+
