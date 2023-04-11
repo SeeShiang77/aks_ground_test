@@ -194,6 +194,42 @@ Events:
 see@Azure:~$ 
 
 
+==================================
+
+POD priority test.
+
+create priority class set to 1000000
+Then pod created with reference to the priority class inherited the value.
+
+-----------------------------------------------------------------------------------
+
+see@Azure:~$ k describe priorityclasses.scheduling.k8s.io high-priority-nonpreempting 
+Name:              high-priority-nonpreempting
+Value:             1000000
+GlobalDefault:     false
+PreemptionPolicy:  Never
+Description:       This priority class will not cause other pods to be preempted.
+Annotations:       kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"scheduling.k8s.io/v1","description":"This priority class will not cause other pods to be preempted.","globalDefault":false,"kind":"PriorityClass","metadata":{"annotations":{},"name":"high-priority-nonpreempting"},"preemptionPolicy":"Never","value":1000000}
+
+Events:  <none>
+see@Azure:~$ k describe pod nginx-priority | grep -A10 Priority
+Priority:             1000000
+Priority Class Name:  high-priority-nonpreempting
+Service Account:      default
+Node:                 aks-agentpool-18899623-vmss000001/10.224.0.4
+Start Time:           Tue, 11 Apr 2023 08:57:52 +0000
+Labels:               env=test-priority
+Annotations:          <none>
+Status:               Running
+IP:                   10.244.1.34
+IPs:
+  IP:  10.244.1.34
+Containers:
+see@Azure:~$ 
+
+
+------------------------------------------------------------------------------
+
 
 
 
