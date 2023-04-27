@@ -872,6 +872,25 @@ cka@controller-vm:~$
 
 ===============
 
+cka@controller-vm:~$ kubectl get pods -A
+NAMESPACE     NAME                                    READY   STATUS    RESTARTS     AGE
+kube-system   coredns-5d78c9869d-84f5t                1/1     Running   0            35m
+kube-system   coredns-5d78c9869d-z5c2c                1/1     Running   0            35m
+kube-system   etcd-controller-vm                      1/1     Running   0            35m
+kube-system   kube-apiserver-controller-vm            1/1     Running   0            35m
+kube-system   kube-controller-manager-controller-vm   1/1     Running   0            35m
+kube-system   kube-proxy-rlnqw                        1/1     Running   0            24m
+kube-system   kube-proxy-wfknj                        1/1     Running   0            35m
+kube-system   kube-proxy-xbglz                        1/1     Running   0            25m
+kube-system   kube-scheduler-controller-vm            1/1     Running   0            35m
+kube-system   weave-net-fjdmq                         2/2     Running   1 (5m ago)   5m15s
+kube-system   weave-net-gzx7h                         2/2     Running   1 (5m ago)   5m15s
+kube-system   weave-net-wc78x                         2/2     Running   1 (5m ago)   5m15s
+cka@controller-vm:~$
+cka@controller-vm:~$
+
+
+
 
 
 
