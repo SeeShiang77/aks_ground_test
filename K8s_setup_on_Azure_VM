@@ -890,6 +890,24 @@ cka@controller-vm:~$
 cka@controller-vm:~$
 
 
+===============================
+
+Deploy a pod.
+---------------
+
+cka@controller-vm:~$ k create deploy nginx --image=nginx:latest
+deployment.apps/nginx created
+cka@controller-vm:~$ k get pods
+NAME                     READY   STATUS              RESTARTS   AGE
+nginx-7bf8c77b5b-sfrlq   0/1     ContainerCreating   0          3s
+cka@controller-vm:~$ k get pods -w
+NAME                     READY   STATUS              RESTARTS   AGE
+nginx-7bf8c77b5b-sfrlq   0/1     ContainerCreating   0          8s
+nginx-7bf8c77b5b-sfrlq   1/1     Running             0          11s
+
+
+
+
 
 
 
