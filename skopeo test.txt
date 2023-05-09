@@ -1,0 +1,155 @@
+
+Skopeo ( to inspect repository )
+----------------------------------------
+
+[root@ss-linux-lfcs ~]# skopeo inspect docker://registry.fedoraproject.org/fedora:latest
+{
+    "Name": "registry.fedoraproject.org/fedora",
+    "Digest": "sha256:b14af4b4e7abb04e3dd4d7194d9415cedc6f587b6e446581d4ec110f94f9a75f",
+    "RepoTags": [
+        "34-aarch64",
+        "34-ppc64le",
+        "34-x86_64",
+        "34",
+        "34-s390x",
+        "34-armhfp",
+        "33-armhfp",
+        "32-armhfp",
+        "35-aarch64",
+        "35-ppc64le",
+        "35-s390x",
+        "35-x86_64",
+        "35",
+        "35-armhfp",
+        "36-aarch64",
+        "36-armhfp",
+        "36-ppc64le",
+        "36-s390x",
+        "36-x86_64",
+        "30-aarch64",
+        "30-ppc64le",
+        "30-s390x",
+        "30-x86_64",
+        "30",
+        "latest",
+        "rawhide",
+        "30-armhfp",
+        "36",
+        "31-aarch64",
+        "31-x86_64",
+        "31",
+        "31-armhfp",
+        "31-s390x",
+        "31-ppc64le",
+        "32-aarch64",
+        "32-ppc64le",
+        "32-s390x",
+        "32-x86_64",
+        "32",
+        "33-aarch64",
+        "33-ppc64le",
+        "33-s390x",
+        "33-x86_64",
+        "33",
+        "37-aarch64",
+        "37-ppc64le",
+        "37-s390x",
+        "37-x86_64",
+        "37",
+        "38-aarch64",
+        "38-ppc64le",
+        "38-s390x",
+        "38-x86_64",
+        "38",
+        "39-aarch64",
+        "39-s390x",
+        "39-x86_64",
+        "39",
+        "39-ppc64le"
+    ],
+    "Created": "2023-04-19T06:49:02Z",
+    "DockerVersion": "1.10.1",
+    "Labels": {
+        "license": "MIT",
+        "name": "fedora",
+        "vendor": "Fedora Project",
+        "version": "38"
+    },
+    "Architecture": "amd64",
+    "Os": "linux",
+    "Layers": [
+        "sha256:de924d42b91d6d6898968a85cf956b216065442e876409dc098996c2f9f6282d"
+    ],
+    "Env": [
+        "DISTTAG=f38container",
+        "FGC=f38",
+        "container=oci"
+    ]
+}
+
+
+==========
+
+Inspect using jq tool (json output).
+=========================================
+[root@ss-linux-lfcs ~]# skopeo inspect --config docker://registry.fedoraproject.org/fedora:latest | jq
+{
+  "created": "2023-04-19T06:49:02Z",
+  "architecture": "amd64",
+  "os": "linux",
+  "config": {
+    "Env": [
+      "DISTTAG=f38container",
+      "FGC=f38",
+      "container=oci"
+    ],
+    "Cmd": [
+      "/bin/bash"
+    ],
+    "Labels": {
+      "license": "MIT",
+      "name": "fedora",
+      "vendor": "Fedora Project",
+      "version": "38"
+    }
+  },
+  "rootfs": {
+    "type": "layers",
+    "diff_ids": [
+      "sha256:8f5d7501282ea6fdd5fb19973cc3018817b9eb0ff25ceedad508f3932f353566"
+    ]
+  },
+  "history": [
+    {
+      "created": "2023-04-19T06:49:02Z",
+      "comment": "Created by Image Factory"
+    }
+  ]
+}
+[root@ss-linux-lfcs ~]# 
+
+
+
+=======================================================
+
+Copy remote registry to local directory.
+===================================================
+[root@centos-host ~]# skopeo sync --src docker --dest dir registry.fedoraproject.org/fedora:latest ~bob/fedora
+INFO[0000] Tag presence check                            imagename="registry.fedoraproject.org/fedora:latest" tagged=true
+INFO[0000] Copying image ref 1/1                         from="docker://registry.fedoraproject.org/fedora:latest" to="dir:/home/bob/fedora/fedora:latest"
+Getting image source signatures
+Copying blob de924d42b91d done  
+Copying config c9bfca6d0a done  
+Writing manifest to image destination
+Storing signatures
+INFO[0002] Synced 1 images from 1 sources               
+[root@centos-host ~]# 
+
+
+
+================================================================
+
+
+
+
+
