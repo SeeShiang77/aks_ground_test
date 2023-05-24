@@ -1,0 +1,38 @@
+How to troubleshoot the kube-apiserver unable to start ...
+==================================================================
+We can check via the 
+
+
+
+controlplane /etc/kubernetes/manifests ➜  crictl ps -a
+CONTAINER           IMAGE               CREATED             STATE               NAME                      ATTEMPT             POD ID              POD
+2e0ae0201220e       a31e1d84401e6       7 seconds ago       Exited              kube-apiserver            5                   490cef8a3b01e       kube-apiserver-controlplane
+cfa0e6d0a7b3b       dafd8ad70b156       3 minutes ago       Running             kube-scheduler            4                   ba337f57911b0       kube-scheduler-controlplane
+6772bad26a827       5d7c5dfd3ba18       3 minutes ago       Running             kube-controller-manager   4                   5d2317973ae7d       kube-controller-manager-controlplane
+7d8129a4a9042       5d7c5dfd3ba18       8 minutes ago       Exited              kube-controller-manager   3                   5d2317973ae7d       kube-controller-manager-controlplane
+3afbda7356298       dafd8ad70b156       8 minutes ago       Exited              kube-scheduler            3                   ba337f57911b0       kube-scheduler-controlplane
+8a6f219251ba8       5185b96f0becf       47 minutes ago      Running             coredns                   0                   555f5bcb78acd       coredns-787d4945fb-ptpd8
+60cdf153d2a68       5185b96f0becf       47 minutes ago      Running             coredns                   0                   d36024fc6fe07       coredns-787d4945fb-n4wn9
+0c6b8da92d0b3       8b675dda11bb1       47 minutes ago      Running             kube-flannel              0                   ceb5e52e71df4       kube-flannel-ds-v29lp
+98be9f707ea25       8b675dda11bb1       47 minutes ago      Exited              install-cni               0                   ceb5e52e71df4       kube-flannel-ds-v29lp
+34b699b604aac       fcecffc7ad4af       47 minutes ago      Exited              install-cni-plugin        0                   ceb5e52e71df4       kube-flannel-ds-v29lp
+31ac54db02e56       556768f31eb1d       47 minutes ago      Running             kube-proxy                0                   35e6d69f80206       kube-proxy-8mppt
+d48fc357fde37       fce326961ae2d       48 minutes ago      Running             etcd                      0                   1a00a6674161e       etcd-controlplane
+
+controlplane /etc/kubernetes/manifests ➜  crictl logs 2e0ae0201220e    ---> The container ID from the above "crictl ps -a"
+Error: invalid argument "wrong" for "--allow-privileged" flag: strconv.ParseBool: parsing "wrong": invalid syntax
+
+controlplane /etc/kubernetes/manifests ➜  
+
+
+Summary
+Here is a suggested list of steps that sums up all the above examples:
+
+Make a copy of kube-apiserver.yaml before you make changes to it.
+Make the change at kube-apiserver.yaml and save it. 
+Monitor containers with watch crictl ps or watch docker ps depending on the container runtime that the cluster uses.
+If the kube-apiserver does not reappear after a couple of minutes:
+Look at container logs with crictl ps -a. If you see a kube-apiserver container, inspect its logs with crictl logs [id of the container]. If you identify the error, fix it at kube-apiserver.yaml and go back to step 3.
+If you did not find the error, search for it at journalctl using journalctl | grep api-server. Try to find the error there.
+If you did not find the error at journalctl , look at the container and pod logs at /var/log.
+There are cases where the Kubelet did stop the kube-apiserver container but did not start it again. You can force it to do so with systemctl restart kubelet.service. That should attempt to start kube-apiserver and log an error at journalctl if it failed.
